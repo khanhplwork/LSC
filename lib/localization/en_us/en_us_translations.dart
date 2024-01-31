@@ -1,8 +1,9 @@
 final Map<String, String> enUs = {
   // Login Screen Screen
-  "lbl_email": "Email",
+  "lbl_email": "Username",
   "lbl_log_in_with": "Log in with",
   "lbl_login": "login",
+  "lbl_login3": "login",
   "lbl_or": "OR",
   "lbl_password": "Password",
   "lbl_register_now": "Register now",
@@ -16,6 +17,6 @@ final Map<String, String> enUs = {
   "msg_something_went_wrong": "Something Went Wrong!",
 
   // Validation Error String
-  "err_msg_please_enter_valid_email": "Please enter valid email",
+  "err_msg_please_enter_valid_email": "Please enter valid username",
   "err_msg_please_enter_valid_password": "Please enter valid password",
 };

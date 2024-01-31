@@ -3,9 +3,9 @@ class ImageConstant {
   static String imagePath = 'assets/images';
 
   // Login Screen images
-  static String imgCheckmark = '$imagePath/img_checkmark.svg';
+  static String imgCheckmark = '$imagePath/img_checkmark.png';
 
-  static String imgLocation = '$imagePath/img_location.svg';
+  static String imgLocation = '$imagePath/img_location.png';
 
   static String imgGoogle1 = '$imagePath/img_google_1.svg';
 
@@ -17,4 +17,6 @@ class ImageConstant {
   static String imgImage1 = '$imagePath/img_image_1.png';
 
   static String imageNotFound = 'assets/images/image_not_found.png';
+
+  static String lscLogo = 'assets/images/LSC_logo.png';
 }

@@ -8,14 +8,11 @@ class LoginState extends Equatable {
     this.emailController,
     this.passwordController,
     this.isSelectedSwitch = false,
-    this.loginModelObj,
   });
 
   TextEditingController? emailController;
 
   TextEditingController? passwordController;
-
-  LoginModel? loginModelObj;
 
   bool isSelectedSwitch;
 
@@ -24,19 +21,17 @@ class LoginState extends Equatable {
         emailController,
         passwordController,
         isSelectedSwitch,
-        loginModelObj,
       ];
+      
   LoginState copyWith({
     TextEditingController? emailController,
     TextEditingController? passwordController,
     bool? isSelectedSwitch,
-    LoginModel? loginModelObj,
   }) {
     return LoginState(
       emailController: emailController ?? this.emailController,
       passwordController: passwordController ?? this.passwordController,
       isSelectedSwitch: isSelectedSwitch ?? this.isSelectedSwitch,
-      loginModelObj: loginModelObj ?? this.loginModelObj,
     );
   }
 }

@@ -1,33 +1,21 @@
 // ignore_for_file: must_be_immutable
 
-part of 'login_bloc.dart';
+part of 'home_bloc.dart';
 
 /// Abstract class for all events that can be dispatched from the
 ///Login widget.
 ///
 /// Events must be immutable and implement the [Equatable] interface.
 @immutable
-abstract class LoginEvent extends Equatable {}
+abstract class HomeEvent extends Equatable {}
 
 /// Event that is dispatched when the Login widget is first created.
-class LoginInitialEvent extends LoginEvent {
+class HomeInitialEvent extends HomeEvent {
   @override
   List<Object?> get props => [];
 }
 
-///Event for changing switch
-class ChangeSwitchEvent extends LoginEvent {
-  ChangeSwitchEvent({required this.value});
-
-  bool value;
-
-  @override
-  List<Object?> get props => [
-        value,
-      ];
-}
-
-class OnClickLoginEvent extends LoginEvent {
+class LogoutEvent extends HomeEvent {
   @override
   List<Object?> get props => [];
 }

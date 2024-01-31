@@ -89,6 +89,9 @@ class ColorSchemes {
 
 /// Class containing custom colors for a primary theme.
 class PrimaryColors {
+  //common
+  Color get bgEDF5F8 => Color(0XFFEDF5F8);
+
   // Black
   Color get black900 => Color(0XFF000000);
 
@@ -102,6 +105,7 @@ class PrimaryColors {
 
   // Grayf
   Color get gray2003f => Color(0X3FE8E8E8);
+  Color get gray414755 => Color(0XFF414755);
 
   // Indigo
   Color get indigoA700 => Color(0XFF1317DD);
@@ -109,6 +113,9 @@ class PrimaryColors {
 
   // White
   Color get whiteA700 => Color(0XFFFFFFFF);
+
+  //blue
+  Color get blue4FC3F7=> Color(0XFF4FC3F7);
 }
 
 PrimaryColors get appTheme => ThemeHelper().themeColor();

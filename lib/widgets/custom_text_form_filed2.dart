@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lsc/core/app_export.dart';
 
-class CustomTextFormField extends StatelessWidget {
-  CustomTextFormField({
+class CustomTextFormField2 extends StatelessWidget {
+  CustomTextFormField2({
     Key? key,
     this.alignment,
     this.width,
@@ -103,37 +103,45 @@ class CustomTextFormField extends StatelessWidget {
       );
   InputDecoration get decoration => InputDecoration(
         hintText: hintText ?? "",
-        hintStyle: hintStyle ?? theme.textTheme.bodyMedium,
+        hintStyle: hintStyle ??
+            theme.textTheme.bodyMedium!.copyWith(
+              color: appTheme.gray500,
+            ),
         prefixIcon: prefix,
         prefixIconConstraints: prefixConstraints,
         suffixIcon: suffix,
         suffixIconConstraints: suffixConstraints,
         isDense: true,
-        
         contentPadding: contentPadding ??
             EdgeInsets.only(
               top: 12.v,
               right: 12.h,
               bottom: 12.v,
+              left: 12.h,
             ),
         fillColor: fillColor ?? appTheme.whiteA700,
         filled: filled,
         border: borderDecoration ??
             OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.h),
-              borderSide: BorderSide.none,
-              
+              borderSide: BorderSide(
+                color: appTheme.gray200,
+                width: 1,
+              ),
             ),
         enabledBorder: borderDecoration ??
             OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.h),
-              borderSide: BorderSide.none,
+              borderSide: BorderSide(
+                color: appTheme.gray200,
+                width: 1,
+              ),
             ),
         focusedBorder: borderDecoration ??
             OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.h),
               borderSide: BorderSide(
-                color: appTheme.gray200,
+                color: Colors.black.withOpacity(0.4),
                 width: 1,
               ),
             ),
