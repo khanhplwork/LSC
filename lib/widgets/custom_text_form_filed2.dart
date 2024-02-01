@@ -10,6 +10,7 @@ class CustomTextFormField2 extends StatelessWidget {
     this.controller,
     this.focusNode,
     this.autofocus = true,
+    this.readOnly = false,
     this.textStyle,
     this.obscureText = false,
     this.textInputAction = TextInputAction.next,
@@ -41,6 +42,8 @@ class CustomTextFormField2 extends StatelessWidget {
   final FocusNode? focusNode;
 
   final bool? autofocus;
+
+  final bool? readOnly;
 
   final TextStyle? textStyle;
 
@@ -99,6 +102,7 @@ class CustomTextFormField2 extends StatelessWidget {
           maxLines: maxLines ?? 1,
           decoration: decoration,
           validator: validator,
+          readOnly: readOnly!,
         ),
       );
   InputDecoration get decoration => InputDecoration(
