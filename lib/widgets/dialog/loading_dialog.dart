@@ -7,17 +7,20 @@ void showLoadingDialog() async {
     context: context,
     barrierDismissible: false, // user must tap button!
     builder: (BuildContext context) {
-      return AlertDialog(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          content: SizedBox(
-            height: 300.v,
-            child: Center(
-              child: CircularProgressIndicator(
-                color: appTheme.bgEDF5F8,
-              ),
+      return Material(
+        type: MaterialType.transparency,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.grey.withOpacity(0.5),
+          ),
+          height: MediaQuery.of(context).size.height,
+          child: Center(
+            child: CircularProgressIndicator(
+              color: appTheme.bgEDF5F8,
             ),
-          ));
+          ),
+        ),
+      );
     },
   );
 }
