@@ -1,24 +1,26 @@
-
 // ignore_for_file: override_on_non_overriding_member, must_be_immutable
 
 part of 'inprogress_bloc.dart';
 
 class InprogressState extends Equatable {
-  DriverTrip? curTrip;
-  Timer? timer;
   InprogressState({
-    this.curTrip,
-    this.timer,
+    this.isShowDetail = false,
+    PendingOrder? selectedOrder,
   });
+
+  bool isShowDetail;
+  PendingOrder? selectedOrder;
+
   @override
-  List<Object?> get props => [curTrip, timer];
+  List<Object?> get props => [this.isShowDetail, this.selectedOrder];
+
   InprogressState copyWith({
-    DriverTrip? curTrip,
-    Timer? timer,
+    bool? isShowDetail,
+    PendingOrder? selectedOrder,
   }) {
     return InprogressState(
-      curTrip: curTrip ?? this.curTrip,
-      timer: timer ?? this.timer,
+      isShowDetail: isShowDetail ?? this.isShowDetail,
+      selectedOrder:selectedOrder ?? this.selectedOrder,
     );
   }
 }

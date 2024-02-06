@@ -16,4 +16,9 @@ class Location {
         "latitude": latitude,
         "longtitude": longtitude,
     };
+
+    @override
+    String toString() {
+      return 'Location{latitude: $latitude, longtitude: $longtitude}';
+    }
 }

@@ -10,6 +10,7 @@ import 'package:lsc/core/api/api.dart';
 import 'package:lsc/core/app_export.dart';
 import 'package:lsc/core/model/pending_order_model/pending_order.dart';
 import 'package:lsc/core/model/trip_model/location.dart';
+import 'package:lsc/widgets/dialog/loading_dialog.dart';
 
 import '../../../core/model/trip_model/trip.dart';
 
@@ -41,27 +42,47 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     LocationPermission permission;
     permission = await Geolocator.requestPermission();
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    print('Test position: ${position.latitude} - ${position.longitude}');
-      curLiveLocations.add(Location(latitude: position.latitude, longtitude: position.longitude));
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    curLiveLocations.add(
+        Location(latitude: position.latitude, longtitude: position.latitude));
 
-    for(int i = 0; i < pendingOrders!.length; i++){
-      await databaseReference.child(pendingOrders![i].orderId.toString()).once().then((DatabaseEvent event) {
+    //load list location from firebase db
+    for (int i = 0; i < pendingOrders!.length; i++) {
+      await databaseReference
+          .child(pendingOrders![i].orderId.toString())
+          .once()
+          .then((DatabaseEvent event) {
+
+        //if data is null - create new
+        //if data is not null -  update
+
         if (event.snapshot.value != null) {
-          DriverTrip trip = driverTripFromJson(event.snapshot.value!.toString());
-          if (trip.location.every((item) => curLiveLocations.contains(item))) {
-            // trip.updateLiveLocation(curLiveLocations);
+          Map<dynamic, dynamic> result = (event.snapshot.value as Map<Object?, Object?>);
+
+          DriverTrip trip = DriverTrip.fromMap(result);
+          //if current list loction has 1 item - create new list location
+          //if current list loction has more than 1 item - update list location
+          if (curLiveLocations.length > 1) {
+            trip.updateListLocation(curLiveLocations);
           } else {
-            // trip.addLocation(curLiveLocations);
+            trip.addNewListLocation(curLiveLocations);
           }
+          databaseReference.child(pendingOrders![i].orderId.toString()).set({
+            'start_at': trip.startAt,
+            'location': trip.location.map((e) => e.map((e) => e.toJson()).toList()).toList()
+          });
         } else {
           databaseReference.child(pendingOrders![i].orderId.toString()).set({
             'start_at': '${DateTime.now()}',
-            'location': {
-              'live_location': [
-                {"latitude": 1.1, "longtitude": 2.2},
+            'location': [
+              [
+                {
+                  "latitude": position.latitude,
+                  "longtitude": position.latitude
+                },
               ],
-            },
+            ],
           });
         }
       });
@@ -72,12 +93,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     HomeInitialEvent event,
     Emitter<HomeState> emit,
   ) async {
+    showLoadingDialog();
     pendingOrders = await getPendingOrders();
     if (pendingOrders != null) {
-      pendingOrdersTimer = Timer.periodic(Duration(seconds: 3), (timer) {
-        // _checkLiveLocation();
+      pendingOrdersTimer = Timer.periodic(Duration(seconds: 10), (timer) {
+        _checkLiveLocation();
       });
     }
+    Navigator.pop(NavigatorService.navigatorKey.currentContext!);
     emit(
       state.copyWith(
         pendingOrders: pendingOrders,

@@ -13,3 +13,17 @@ class InprogressStopLiveLocationEvent extends InprogressEvent {
   @override
   List<Object> get props => [];
 }
+
+class InprogressChooseOrderEvent extends InprogressEvent {
+  final PendingOrder selectedOrder;
+
+  InprogressChooseOrderEvent(this.selectedOrder);
+
+  @override
+  List<Object> get props => [selectedOrder];
+}
+
+class InprogressBackToListEvent extends InprogressEvent {
+  @override
+  List<Object> get props => [];
+}
