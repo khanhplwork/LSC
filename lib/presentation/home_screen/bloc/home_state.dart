@@ -1,12 +1,14 @@
 part of 'home_bloc.dart';
 
 class HomeState extends Equatable {
-  // HomeState({});
+  HomeState({this.pendingOrders});
+
+  List<PendingOrder>? pendingOrders;
+
   @override
-  List<Object?> get props => [ ];
-  // HomeState copyWith({
-  // }) {
-  //   return HomeState(
-  //   );
-  // }
+  List<Object?> get props => [this.pendingOrders];
+
+  HomeState copyWith({List<PendingOrder>? pendingOrders}) {
+    return HomeState(pendingOrders: pendingOrders ?? this.pendingOrders);
+  }
 }

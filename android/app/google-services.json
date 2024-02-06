@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "582909295950",
+    "firebase_url": "https://lsc-freights-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "lsc-freights",
+    "storage_bucket": "lsc-freights.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:582909295950:android:06523690d2fdc76aa6f21f",
+        "android_client_info": {
+          "package_name": "com.lsc.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3Er3MclGmVbxFgAlH7Pxz_nwvQENwCUc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:lsc/core/model/control_panel_model/control_panel.dart';
+import 'package:lsc/core/model/pending_order_model/pending_order.dart';
+import 'package:lsc/core/model/shipment_model/shipment.dart';
 import 'package:lsc/core/model/user_info_model/user_info.dart';
 import 'package:lsc/core/model/user_model/user.dart';
 import 'package:lsc/core/utils/constant.dart';
@@ -23,12 +25,11 @@ Future<bool> login(String username, String password) async {
 
   if (response.statusCode == 200) {
     // API call success
-    print('API call success');
+    print('API login call success');
     user = User.fromJson(jsonDecode(response.body));
 
     if (user!.data.userlevel.toString() == "3") {
       NetworkService().updateCookie(response);
-      print('Test header: ${headers.toString()}');
       var box = Hive.box('lscBox');
       box.put('isLogin', true);
       box.put('username', username);
@@ -40,7 +41,7 @@ Future<bool> login(String username, String password) async {
     // print(response.body);
   } else {
     // API call failed
-    print('API call failed with status code: ${response.statusCode}');
+    print('API login call failed with status code: ${response.statusCode}');
     // print(response.body);
     return false;
   }
@@ -97,3 +98,56 @@ Future<UserInfo?> getUserInfo() async {
     return null;
   }
 }
+
+Future<Shipment?> getAllShipment() async {
+  var url = Uri.parse("https://lscfreights.online/api_shipments.php");
+  final response = await http.get(
+    url,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Accept': 'application/json; charset=UTF-8',
+      "Cookie": headers['cookie'] ?? "",
+    },
+  );
+
+  if (response.statusCode == 200) {
+    // API call success
+    print('API getAllShipment call success');
+    Shipment shipment = shipmentFromJson(response.body);
+    return shipment;
+    // print(response.body);
+  } else {
+    // API call failed
+    print(
+        'API getAllShipment call failed with status code: ${response.statusCode}');
+    // print(response.body);
+    return null;
+  }
+}
+
+Future<List<PendingOrder>?> getPendingOrders() async {
+  var url = Uri.parse("https://lscfreights.online/api_get_pending_orders.php");
+  final response = await http.get(
+    url,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Accept': 'application/json; charset=UTF-8',
+      "Cookie": headers['cookie'] ?? "",
+    },
+  );
+
+  if (response.statusCode == 200) {
+    // API call success
+    print('API getPendingOrders call success');
+    List<PendingOrder> pendingOrders = pendingOrderFromJson(response.body);
+    return pendingOrders;
+    // print(response.body);
+  } else {
+    // API call failed
+    print(
+        'API getPendingOrders call failed with status code: ${response.statusCode}');
+    // print(response.body);
+    return null;
+  }
+}
+

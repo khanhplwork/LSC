@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -8,7 +9,8 @@ import 'core/app_export.dart';
 var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-   final appDocumentDirectory = await getApplicationDocumentsDirectory();
+  await Firebase.initializeApp();
+  final appDocumentDirectory = await getApplicationDocumentsDirectory();
   Hive.init(appDocumentDirectory.path);
   // Hive.registerAdapter();
   await Hive.openBox('lscBox');
@@ -21,6 +23,7 @@ Future<void> main() async {
     runApp(MyApp());
   });
 }
+
 
 class MyApp extends StatelessWidget {
   @override

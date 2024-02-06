@@ -98,9 +98,15 @@ class ControlPanelScreen extends StatelessWidget {
                                   top: 5.v,
                                   bottom: 5.v,
                                 ),
-                                child: Icon(
-                                  Icons.local_shipping_sharp,
-                                  color: Colors.orange,
+                                child: InkWell(
+                                  onTap: () {
+                                    NavigatorService.pushNamed(
+                                        AppRoutes.shipmentScreen);
+                                  },
+                                  child: Icon(
+                                    Icons.local_shipping_sharp,
+                                    color: Colors.orange,
+                                  ),
                                 ),
                               ),
                               Column(

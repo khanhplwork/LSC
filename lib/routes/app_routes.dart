@@ -4,11 +4,14 @@ import 'package:lsc/presentation/home_screen/home_screen.dart';
 import 'package:lsc/presentation/login_screen/login_screen.dart';
 import 'package:lsc/presentation/notification_screen/notification.dart';
 import 'package:lsc/presentation/profile_screen/profile_screen.dart';
+import 'package:lsc/presentation/shipment_screen/shipment_screen.dart';
 import 'package:lsc/presentation/splash_screen/splash_screen.dart';
 
 import '../presentation/inprogress_order_screen/inprogress_order_screen.dart';
 
 class AppRoutes {
+  static const String shipmentScreen = '/shipment_screen';
+
   static const String profileScreen = '/profile_screen';
 
   static const String controlPanelScreen = '/control_panel_screen';
@@ -28,6 +31,7 @@ class AppRoutes {
   static const String initialRoute = '/initialRoute';
 
   static Map<String, WidgetBuilder> get routes => {
+        shipmentScreen: ShipmentScreen.builder,
         profileScreen: ProfileScreen.builder,
         controlPanelScreen: ControlPanelScreen.builder,
         inProgressOrderScreen: InProgressOrderScreen.builder,
