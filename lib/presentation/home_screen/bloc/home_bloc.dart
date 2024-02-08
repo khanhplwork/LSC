@@ -9,6 +9,7 @@ import 'package:hive/hive.dart';
 import 'package:lsc/core/api/api.dart';
 import 'package:lsc/core/app_export.dart';
 import 'package:lsc/core/model/pending_order_model/pending_order.dart';
+import 'package:lsc/core/model/shipment_model/shipment.dart';
 import 'package:lsc/core/model/trip_model/location.dart';
 import 'package:lsc/widgets/dialog/loading_dialog.dart';
 
@@ -22,8 +23,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc(HomeState initialState) : super(initialState) {
     on<HomeInitialEvent>(_onInitialize);
     on<LogoutEvent>(_onLogout);
+    on<TestEvent>(_onTest);
   }
-
+  _onTest(
+    TestEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    print('Test state in test event: ${state.recentShipment?.data.length ?? "null"}');
+  }
   _onLogout(
     LogoutEvent event,
     Emitter<HomeState> emit,
@@ -100,10 +107,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         _checkLiveLocation();
       });
     }
+    Shipment? recentShipmentRes = await getRecentShipment();
+    print('Test output: ${recentShipmentRes?.data.length}');
     Navigator.pop(NavigatorService.navigatorKey.currentContext!);
     emit(
       state.copyWith(
         pendingOrders: pendingOrders,
+        recentShipment: recentShipmentRes,
       ),
     );
   }

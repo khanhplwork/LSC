@@ -7,7 +7,6 @@ export 'package:lsc/core/utils/logger.dart';
 export 'package:lsc/core/utils/navigator_service.dart';
 export 'package:lsc/core/utils/pref_utils.dart';
 export 'package:lsc/core/utils/size_utils.dart';
-export 'package:lsc/data/models/selectionPopupModel/selection_popup_model.dart';
 export 'package:lsc/localization/app_localization.dart';
 export 'package:lsc/routes/app_routes.dart';
 export 'package:lsc/theme/app_decoration.dart';

@@ -8,3 +8,8 @@ class InitShipmentEvent extends ShipmentEvent {
   @override
   List<Object?> get props => [];
 }
+
+class SearchShipmentEvent extends ShipmentEvent {
+  @override
+  List<Object?> get props => [];
+}

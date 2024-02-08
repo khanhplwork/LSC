@@ -124,6 +124,62 @@ Future<Shipment?> getAllShipment() async {
     return null;
   }
 }
+Future<Shipment?> searchShipmentByTrackingID(String trackingID) async {
+
+  var url;
+  if(trackingID.isNotEmpty){
+    url = Uri.parse("https://lscfreights.online/api_shipments.php?search=$trackingID");
+  }else{
+    url = Uri.parse("https://lscfreights.online/api_shipments.php");
+  }
+  final response = await http.get(
+    url,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Accept': 'application/json; charset=UTF-8',
+      "Cookie": headers['cookie'] ?? "",
+    },
+  );
+
+  if (response.statusCode == 200) {
+    // API call success
+    print('API searchShipmentByTrackingID call success');
+    Shipment shipment = shipmentFromJson(response.body);
+    return shipment;
+    // print(response.body);
+  } else {
+    // API call failed
+    print(
+        'API searchShipmentByTrackingID call failed with status code: ${response.statusCode}');
+    // print(response.body);
+    return null;
+  }
+}
+Future<Shipment?> getRecentShipment() async {
+  var url = Uri.parse("https://lscfreights.online/api_shipment_delivering.php");
+  final response = await http.get(
+    url,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Accept': 'application/json; charset=UTF-8',
+      "Cookie": headers['cookie'] ?? "",
+    },
+  );
+
+  if (response.statusCode == 200) {
+    // API call success
+    print('API getRecentShipment call success');
+    Shipment shipment = shipmentFromJson(response.body);
+    return shipment;
+    // print(response.body);
+  } else {
+    // API call failed
+    print(
+        'API getRecentShipment call failed with status code: ${response.statusCode}');
+    // print(response.body);
+    return null;
+  }
+}
 
 Future<List<PendingOrder>?> getPendingOrders() async {
   var url = Uri.parse("https://lscfreights.online/api_get_pending_orders.php");

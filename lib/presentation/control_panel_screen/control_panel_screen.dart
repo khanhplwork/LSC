@@ -100,8 +100,6 @@ class ControlPanelScreen extends StatelessWidget {
                                 ),
                                 child: InkWell(
                                   onTap: () {
-                                    NavigatorService.pushNamed(
-                                        AppRoutes.shipmentScreen);
                                   },
                                   child: Icon(
                                     Icons.local_shipping_sharp,

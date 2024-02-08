@@ -2,20 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:lsc/core/app_export.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:lsc/presentation/home_screen/bloc/home_bloc.dart';
+import 'package:lsc/presentation/home_screen/widgets/recent_shipment_widget.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   static Widget builder(BuildContext context) {
     return BlocProvider<HomeBloc>(
-      create: (context) => HomeBloc(HomeState())..add(HomeInitialEvent()),
+      create: (context) => HomeBloc(HomeState(
+        recentShipment: null,
+      ))
+        ..add(HomeInitialEvent()),
       child: HomeScreen(),
     );
   }
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
@@ -51,81 +50,81 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        floatingActionButton: Container(
-          width: 390.h,
-          height: 70.v,
-          margin: EdgeInsets.all(10.v),
-          padding: EdgeInsets.all(10.v),
-          decoration: BoxDecoration(
-            color: appTheme.blue4FC3F7,
-            borderRadius: BorderRadius.circular(10.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 4,
-                offset: Offset(0, 1), // changes position of shadow
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Your orders*",
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.displaySmall!.copyWith(
-                        color: Colors.white,
-                        fontSize: 14.v,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    Text(
-                      "${pendingOrders?.length ?? 0} pending orders",
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.displaySmall!.copyWith(
-                        color: Colors.white,
-                        fontSize: 14.v,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    Text(
-                      "Press next button for more details",
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.displaySmall!.copyWith(
-                        color: Colors.white,
-                        fontSize: 14.v,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: 10.h),
-              InkWell(
-                onTap: () {
-                  if (state.pendingOrders != null &&
-                      state.pendingOrders!.isNotEmpty)
-                    NavigatorService.pushNamed(AppRoutes.inProgressOrderScreen);
-                },
-                child: Icon(
-                  Icons.arrow_circle_right_outlined,
-                  color: Colors.white,
-                  size: 30.h,
-                ),
-              ),
-            ],
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        // floatingActionButton: Container(
+        //   width: 390.h,
+        //   height: 70.v,
+        //   margin: EdgeInsets.all(10.v),
+        //   padding: EdgeInsets.all(10.v),
+        //   decoration: BoxDecoration(
+        //     color: appTheme.blue4FC3F7,
+        //     borderRadius: BorderRadius.circular(10.0),
+        //     boxShadow: [
+        //       BoxShadow(
+        //         color: Colors.grey.withOpacity(0.5),
+        //         spreadRadius: 2,
+        //         blurRadius: 4,
+        //         offset: Offset(0, 1), // changes position of shadow
+        //       ),
+        //     ],
+        //   ),
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.start,
+        //     children: [
+        //       Expanded(
+        //         child: Column(
+        //           mainAxisAlignment: MainAxisAlignment.center,
+        //           crossAxisAlignment: CrossAxisAlignment.start,
+        //           children: [
+        //             Text(
+        //               "Your orders*",
+        //               maxLines: 1,
+        //               overflow: TextOverflow.ellipsis,
+        //               style: theme.textTheme.displaySmall!.copyWith(
+        //                 color: Colors.white,
+        //                 fontSize: 14.v,
+        //                 fontWeight: FontWeight.w700,
+        //               ),
+        //             ),
+        //             Text(
+        //               "${pendingOrders?.length ?? 0} pending orders",
+        //               maxLines: 1,
+        //               overflow: TextOverflow.ellipsis,
+        //               style: theme.textTheme.displaySmall!.copyWith(
+        //                 color: Colors.white,
+        //                 fontSize: 14.v,
+        //                 fontWeight: FontWeight.w700,
+        //               ),
+        //             ),
+        //             Text(
+        //               "Press next button for more details",
+        //               maxLines: 1,
+        //               overflow: TextOverflow.ellipsis,
+        //               style: theme.textTheme.displaySmall!.copyWith(
+        //                 color: Colors.white,
+        //                 fontSize: 14.v,
+        //                 fontWeight: FontWeight.w700,
+        //               ),
+        //             ),
+        //           ],
+        //         ),
+        //       ),
+        //       SizedBox(width: 10.h),
+        //       InkWell(
+        //         onTap: () {
+        //           if (state.pendingOrders != null &&
+        //               state.pendingOrders!.isNotEmpty)
+        //             NavigatorService.pushNamed(AppRoutes.inProgressOrderScreen);
+        //         },
+        //         child: Icon(
+        //           Icons.arrow_circle_right_outlined,
+        //           color: Colors.white,
+        //           size: 30.h,
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
+        // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         drawer: Drawer(
           backgroundColor: appTheme.gray414755,
           child: ListView(
@@ -198,9 +197,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.white,
                   ),
                 ),
-                title: Text('History', style: TextStyle(color: Colors.white)),
+                title: Text('Shipment', style: TextStyle(color: Colors.white)),
                 onTap: () {
                   // Handle item 1 tap
+
+                  NavigatorService.pushNamed(AppRoutes.shipmentScreen);
                 },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
@@ -268,133 +269,25 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(
+                  ListView.separated(
+                    physics: BouncingScrollPhysics(),
+                    shrinkWrap: true,
+                    scrollDirection: Axis.vertical,
+                    padding: EdgeInsets.only(
                         left: 10.h, top: 10.v, right: 10.h, bottom: 10.v),
-                    padding: EdgeInsets.all(10.h),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10.0),
-                      border: Border.all(
-                        color: Colors.grey,
-                        width: 1,
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Order ID: ",
-                              style: theme.textTheme.displaySmall!.copyWith(
-                                color: Colors.black,
-                                fontSize: 14.v,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                "OD123456789",
-                                textAlign: TextAlign.right,
-                                style: theme.textTheme.displaySmall!.copyWith(
-                                  color: Colors.black,
-                                  fontSize: 14.v,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 5.v),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Delivery address: ",
-                                style: theme.textTheme.displaySmall!.copyWith(
-                                  color: Colors.black,
-                                  fontSize: 14.v,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  "abcxyz",
-                                  textAlign: TextAlign.right,
-                                  style: theme.textTheme.displaySmall!.copyWith(
-                                    color: Colors.black,
-                                    fontSize: 14.v,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 5.v),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Receiver: ",
-                                style: theme.textTheme.displaySmall!.copyWith(
-                                  color: Colors.black,
-                                  fontSize: 14.v,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  "abcxyz",
-                                  textAlign: TextAlign.right,
-                                  style: theme.textTheme.displaySmall!.copyWith(
-                                    color: Colors.black,
-                                    fontSize: 14.v,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 5.v),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Order Status: ",
-                                style: theme.textTheme.displaySmall!.copyWith(
-                                  color: Colors.black,
-                                  fontSize: 14.v,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  "Done",
-                                  textAlign: TextAlign.right,
-                                  style: theme.textTheme.displaySmall!.copyWith(
-                                    color: Colors.green,
-                                    fontSize: 14.v,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        onTap: () {
+                          NavigatorService.pushNamed(AppRoutes.inProgressOrderScreen);
+                        },
+                        child: recentShipmentWidget(
+                            context, state.recentShipment!.data[index]),
+                      );
+                    },
+                    separatorBuilder: (context, index) {
+                      return SizedBox(height: 10.v);
+                    },
+                    itemCount: state.recentShipment?.data.length ?? 0,
                   ),
                 ],
               ),
