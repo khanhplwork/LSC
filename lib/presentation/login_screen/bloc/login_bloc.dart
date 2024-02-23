@@ -40,7 +40,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   _changeSwitch(
-    ChangeSwitchEvent event,
+    ChangeSwitchEvent event,     
     Emitter<LoginState> emit,
   ) {
     emit(state.copyWith(

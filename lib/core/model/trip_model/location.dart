@@ -1,24 +1,24 @@
 class Location {
-    double latitude;
-    double longtitude;
+  double latitude;
+  double longitude;
 
-    Location({
-        required this.latitude,
-        required this.longtitude,
-    });
+  Location({
+    required this.latitude,
+    required this.longitude,
+  });
 
-    factory Location.fromJson(Map<String, dynamic> json) => Location(
+  factory Location.fromJson(Map<String, dynamic> json) => Location(
         latitude: json["latitude"]?.toDouble(),
-        longtitude: json["longtitude"]?.toDouble(),
-    );
+        longitude: json["longitude"]?.toDouble(),
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "latitude": latitude,
-        "longtitude": longtitude,
-    };
+        "longitude": longitude,
+      };
 
-    @override
-    String toString() {
-      return 'Location{latitude: $latitude, longtitude: $longtitude}';
-    }
+  @override
+  String toString() {
+    return 'Location{latitude: $latitude, longitude: $longitude}';
+  }
 }

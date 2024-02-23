@@ -29,8 +29,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     TestEvent event,
     Emitter<HomeState> emit,
   ) async {
-    print('Test state in test event: ${state.recentShipment?.data.length ?? "null"}');
+    print(
+        'Test state in test event: ${state.recentShipment?.data.length ?? "null"}');
   }
+
   _onLogout(
     LogoutEvent event,
     Emitter<HomeState> emit,
@@ -50,9 +52,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     LocationPermission permission;
     permission = await Geolocator.requestPermission();
     Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+      desiredAccuracy: LocationAccuracy.bestForNavigation,
+    );
+
+    print("current location: ${position.latitude}, ${position.longitude}");
+
     curLiveLocations.add(
-        Location(latitude: position.latitude, longtitude: position.latitude));
+        Location(latitude: position.latitude, longitude: position.longitude));
 
     //load list location from firebase db
     for (int i = 0; i < pendingOrders!.length; i++) {
@@ -60,12 +66,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           .child(pendingOrders![i].orderId.toString())
           .once()
           .then((DatabaseEvent event) {
-
         //if data is null - create new
         //if data is not null -  update
 
         if (event.snapshot.value != null) {
-          Map<dynamic, dynamic> result = (event.snapshot.value as Map<Object?, Object?>);
+          Map<dynamic, dynamic> result =
+              (event.snapshot.value as Map<Object?, Object?>);
 
           DriverTrip trip = DriverTrip.fromMap(result);
           //if current list loction has 1 item - create new list location
@@ -77,7 +83,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           }
           databaseReference.child(pendingOrders![i].orderId.toString()).set({
             'start_at': trip.startAt,
-            'location': trip.location.map((e) => e.map((e) => e.toJson()).toList()).toList()
+            'location': trip.location
+                .map((e) => e.map((e) => e.toJson()).toList())
+                .toList()
           });
         } else {
           databaseReference.child(pendingOrders![i].orderId.toString()).set({
@@ -86,7 +94,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
               [
                 {
                   "latitude": position.latitude,
-                  "longtitude": position.latitude
+                  "longitude": position.longitude
                 },
               ],
             ],
@@ -103,7 +111,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     showLoadingDialog();
     pendingOrders = await getPendingOrders();
     if (pendingOrders != null) {
-      pendingOrdersTimer = Timer.periodic(Duration(seconds: 10), (timer) {
+      pendingOrdersTimer = Timer.periodic(Duration(seconds: 5), (timer) {
         _checkLiveLocation();
       });
     }
