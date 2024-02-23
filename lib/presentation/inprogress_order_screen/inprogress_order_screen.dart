@@ -7,6 +7,9 @@ import 'package:lsc/core/app_export.dart';
 import 'package:lsc/core/model/pending_order_model/pending_order.dart';
 import 'package:lsc/presentation/inprogress_order_screen/bloc/inprogress_bloc.dart';
 import 'package:lsc/presentation/inprogress_order_screen/widgets/pending_order_item.dart';
+import 'package:lsc/widgets/custom_elevated_button.dart';
+import 'package:lsc/widgets/dialog/fail_dialog.dart';
+import 'package:lsc/widgets/dialog/success_dialog.dart';
 
 class InProgressOrderScreen extends StatefulWidget {
   static Widget builder(BuildContext context) {
@@ -22,7 +25,6 @@ class InProgressOrderScreen extends StatefulWidget {
 }
 
 class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
-  PendingOrder? selectedOrder;
   LatLng? _currentPosition;
   double currentZoom = 12;
 
@@ -101,15 +103,73 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<InprogressBloc, InprogressState>(
         builder: (context, state) {
+          final _inprogressBloc = context.read<InprogressBloc>();
       return Scaffold(
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () {
-        //     context
-        //         .read<InprogressBloc>()
-        //         .add(InprogressStopLiveLocationEvent());
-        //   },
-        //   child: Icon(Icons.handshake),
-        // ),
+        floatingActionButton: (state.isShowCompletedButton)
+            ? CustomElevatedButton(
+                onPressed: () {
+                  showDialog<void>(
+                    context: context,
+                    barrierDismissible: true, // user must tap button!
+                    builder: (context) {
+                      return AlertDialog(
+                        content: SingleChildScrollView(
+                          child: ListBody(
+                            children: <Widget>[
+                              Text("Are you sure to complete this order?"),
+                            ],
+                          ),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text(
+                              'Cancel',
+                              style: theme.textTheme.bodyMedium!.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                          TextButton(
+                            child: Text(
+                              'Confirm',
+                              style: theme.textTheme.bodyMedium!.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: appTheme.indigoA700),
+                            ),
+                            onPressed: () {
+                              _inprogressBloc.add(
+                                OnClickCompletedOrderEvent(),
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                text: "Completed Order",
+                buttonStyle: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.h), // <-- Radius
+                  ),
+                  backgroundColor: appTheme.indigoA700,
+                  textStyle: TextStyle(
+                    fontSize: 16.fSize,
+                  ),
+                  padding: EdgeInsets.all(10.fSize),
+                  elevation: 5,
+                  shadowColor: Colors.grey,
+                ),
+                margin: EdgeInsets.only(
+                  left: 22.h,
+                  right: 16.h,
+                ),
+              )
+            : SizedBox(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         body: _currentPosition == null
             ? Center(child: CircularProgressIndicator())
             : Stack(
@@ -131,11 +191,11 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
                     ),
                   ),
                   DraggableScrollableSheet(
-                    minChildSize: 0.1,
+                    minChildSize: 0.2,
                     // Minimum height of the draggable sheet
                     maxChildSize: 0.5,
                     // Maximum height of the draggable sheet
-                    initialChildSize: 0.1,
+                    initialChildSize: 0.2,
                     // Initial height of the draggable sheet
                     expand: true,
                     // Whether the sheet should expand when dragged to its maximum height
@@ -158,156 +218,106 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              BlocSelector<InprogressBloc, InprogressState,
-                                  bool>(
-                                selector: (state) => state.isShowDetail,
-                                builder: (context, isShowDetail) {
-                                  if (!isShowDetail) {
-                                    return ListView.separated(
-                                      shrinkWrap: true,
-                                      scrollDirection: Axis.vertical,
-                                      padding: EdgeInsets.all(10.h),
-                                      physics: BouncingScrollPhysics(),
-                                      itemBuilder: (context, index) {
-                                        return InkWell(
-                                          onTap: () {
-                                            context.read<InprogressBloc>().add(
-                                                InprogressChooseOrderEvent(
-                                                    pendingOrders![index]));
-                                            setState(() {
-                                              selectedOrder =
-                                                  pendingOrders![index];
-                                            });
-                                          },
-                                          child: pendingOrderItem(
-                                              context, pendingOrders![index]),
-                                        );
-                                      },
-                                      separatorBuilder: (context, index) =>
-                                          SizedBox(
-                                        height: 10.v,
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    margin:
+                                        EdgeInsets.only(top: 20.v, left: 20.h),
+                                    child: Text(
+                                      "Order Details",
+                                      style: TextStyle(
+                                        fontSize: 20.fSize,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                      itemCount: pendingOrders!.length,
-                                    );
-                                  } else {
-                                    return Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                            margin: EdgeInsets.only(
-                                                top: 10.v, left: 10.h),
-                                            child: IconButton(
-                                              onPressed: () {
-                                                context.read<InprogressBloc>().add(
-                                                    InprogressBackToListEvent());
-                                              },
-                                              icon: Icon(
-                                                Icons.arrow_back,
-                                                color: Colors.black,
-                                              ),
-                                            )),
-                                        Container(
-                                          margin: EdgeInsets.only(
-                                              top: 20.v, left: 20.h),
-                                          child: Text(
-                                            "Order Details",
-                                            style: TextStyle(
-                                              fontSize: 20.fSize,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(
-                                              top: 20.v, left: 20.h),
-                                          child: Text(
-                                            "Order ID: ${selectedOrder?.orderId ?? ''}",
-                                            style: TextStyle(
-                                              fontSize: 16.fSize,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(
-                                              top: 20.v, left: 20.h),
-                                          child: Text(
-                                            "Order Date: ${selectedOrder?.orderDate.toString().split(" ")[0] ?? ''}",
-                                            style: TextStyle(
-                                              fontSize: 16.fSize,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(
-                                              top: 20.v, left: 20.h),
-                                          child: Text(
-                                            "Receiver: ${selectedOrder?.receiverName ?? ''}",
-                                            style: TextStyle(
-                                              fontSize: 16.fSize,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(
-                                              top: 20.v, left: 20.h),
-                                          child: Text(
-                                            "Order Address: ${selectedOrder?.addressOrder ?? ''}",
-                                            style: TextStyle(
-                                              fontSize: 16.fSize,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(
-                                              top: 20.v, left: 20.h),
-                                          child: Text(
-                                            "Payment: ${selectedOrder?.payment ?? ''}",
-                                            style: TextStyle(
-                                              fontSize: 16.fSize,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(
-                                              top: 20.v, left: 20.h),
-                                          child: Text(
-                                            "Order Status: ${(selectedOrder?.isPickup == 1) ? "Pick up" : ''} ${(selectedOrder?.isConsolidate == 1) ? "Consolidated" : ''}",
-                                            style: TextStyle(
-                                              fontSize: 16.fSize,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(
-                                              top: 20.v, left: 20.h),
-                                          child: Text(
-                                            "Total cost: ${selectedOrder?.totalCost ?? ''}",
-                                            style: TextStyle(
-                                              fontSize: 16.fSize,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(
-                                              top: 20.v, left: 20.h),
-                                          child: Text(
-                                            "Invoice status: ${selectedOrder?.invoiceStatus ?? ''}",
-                                            style: TextStyle(
-                                              fontSize: 16.fSize,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 50.v,
-                                        ),
-                                      ],
-                                    );
-                                  }
-                                },
-                              ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin:
+                                        EdgeInsets.only(top: 20.v, left: 20.h),
+                                    child: Text(
+                                      "Order ID: ${selectedOrder?.orderId ?? ''}",
+                                      style: TextStyle(
+                                        fontSize: 16.fSize,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin:
+                                        EdgeInsets.only(top: 20.v, left: 20.h),
+                                    child: Text(
+                                      "Order Date: ${selectedOrder?.orderDate.toString().split(" ")[0] ?? ''}",
+                                      style: TextStyle(
+                                        fontSize: 16.fSize,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin:
+                                        EdgeInsets.only(top: 20.v, left: 20.h),
+                                    child: Text(
+                                      "Receiver: ${selectedOrder?.receiverName ?? ''}",
+                                      style: TextStyle(
+                                        fontSize: 16.fSize,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin:
+                                        EdgeInsets.only(top: 20.v, left: 20.h),
+                                    child: Text(
+                                      "Order Address: ${selectedOrder?.addressOrder ?? ''}",
+                                      style: TextStyle(
+                                        fontSize: 16.fSize,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin:
+                                        EdgeInsets.only(top: 20.v, left: 20.h),
+                                    child: Text(
+                                      "Payment: ${selectedOrder?.payment ?? ''}",
+                                      style: TextStyle(
+                                        fontSize: 16.fSize,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin:
+                                        EdgeInsets.only(top: 20.v, left: 20.h),
+                                    child: Text(
+                                      "Order Status: ${selectedOrder!.modStyle}",
+                                      style: TextStyle(
+                                        fontSize: 16.fSize,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin:
+                                        EdgeInsets.only(top: 20.v, left: 20.h),
+                                    child: Text(
+                                      "Total cost: ${selectedOrder?.totalCost ?? ''}",
+                                      style: TextStyle(
+                                        fontSize: 16.fSize,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin:
+                                        EdgeInsets.only(top: 20.v, left: 20.h),
+                                    child: Text(
+                                      "Invoice status: ${selectedOrder?.invoiceStatus ?? ''}",
+                                      style: TextStyle(
+                                        fontSize: 16.fSize,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 100.v,
+                                  ),
+                                ],
+                              )
                             ],
                           ),
                         ),
@@ -324,7 +334,7 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
                         ),
                         child: IconButton(
                           onPressed: () {
-                            Navigator.pop(context);
+                            NavigatorService.pushNamedAndRemoveUntil(AppRoutes.homeScreen);
                           },
                           icon: Icon(
                             Icons.arrow_back,

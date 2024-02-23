@@ -4,22 +4,22 @@ part of 'inprogress_bloc.dart';
 
 class InprogressState extends Equatable {
   InprogressState({
-    this.isShowDetail = false,
+    this.isShowCompletedButton = false,
     PendingOrder? selectedOrder,
   });
 
-  bool isShowDetail;
+  bool isShowCompletedButton;
   PendingOrder? selectedOrder;
 
   @override
-  List<Object?> get props => [this.isShowDetail, this.selectedOrder];
+  List<Object?> get props => [this.isShowCompletedButton, this.selectedOrder];
 
   InprogressState copyWith({
-    bool? isShowDetail,
+    bool? isShowCompletedButton,
     PendingOrder? selectedOrder,
   }) {
     return InprogressState(
-      isShowDetail: isShowDetail ?? this.isShowDetail,
+      isShowCompletedButton: isShowCompletedButton ?? this.isShowCompletedButton,
       selectedOrder:selectedOrder ?? this.selectedOrder,
     );
   }

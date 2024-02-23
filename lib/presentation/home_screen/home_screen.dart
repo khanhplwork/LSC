@@ -278,6 +278,7 @@ class HomeScreen extends StatelessWidget {
                     itemBuilder: (context, index) {
                       return InkWell(
                         onTap: () {
+                          selectedOrder = state.recentShipment?.data[index];
                           NavigatorService.pushNamed(AppRoutes.inProgressOrderScreen);
                         },
                         child: recentShipmentWidget(

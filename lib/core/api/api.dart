@@ -207,3 +207,33 @@ Future<List<PendingOrder>?> getPendingOrders() async {
   }
 }
 
+
+Future<bool> completedOrder(String orderID) async {
+  var url = Uri.parse("https://lscfreights.online/api_order_delivered.php");
+  final response = await http.post(
+    url,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Accept': 'application/json; charset=UTF-8',
+      "Cookie": headers['cookie'] ?? "",
+    },
+    body: jsonEncode(
+      <String, dynamic>{"id": orderID},
+    ),
+  );
+
+  if (response.statusCode == 200) {
+    // API call success
+    print('API completedOrder call success');
+
+    return true;
+    // print(response.body);
+  } else {
+    // API call failed
+    print('API completedOrder call failed with status code: ${response.statusCode}');
+    // print(response.body);
+    return false;
+  }
+}
+
+

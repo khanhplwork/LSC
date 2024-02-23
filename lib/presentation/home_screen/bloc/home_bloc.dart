@@ -111,6 +111,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     showLoadingDialog();
     pendingOrders = await getPendingOrders();
     if (pendingOrders != null) {
+
       pendingOrdersTimer = Timer.periodic(Duration(seconds: 5), (timer) {
         _checkLiveLocation();
       });

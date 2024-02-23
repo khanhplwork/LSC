@@ -113,7 +113,7 @@ Widget recentShipmentWidget (BuildContext context, ShipmentData data){
               ),
               Expanded(
                 child: Text(
-                  "${(data.isPickup == 1) ? "Picked up" : ""} ${(data.isConsolidate == 1) ? "Consolidated" : ""}",
+                  data.modStyle,
                   textAlign: TextAlign.right,
                   style: theme.textTheme.displaySmall!.copyWith(
                     color: Colors.black,
