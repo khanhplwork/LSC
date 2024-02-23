@@ -334,6 +334,7 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
                         ),
                         child: IconButton(
                           onPressed: () {
+                            selectedOrder = null;
                             NavigatorService.pushNamedAndRemoveUntil(AppRoutes.homeScreen);
                           },
                           icon: Icon(
