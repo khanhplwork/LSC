@@ -99,12 +99,52 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
     });
   }
 
+  void _currentLocation() async {
+    if(mapController == null || _currentPosition == null){
+
+    }else{
+      mapController?.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          bearing: 0,
+          target: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+          zoom: 17.0,
+        ),
+      ));
+    }
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<InprogressBloc, InprogressState>(
         builder: (context, state) {
           final _inprogressBloc = context.read<InprogressBloc>();
       return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          toolbarHeight: 50.v,
+          leading: IconButton(
+            onPressed: () {
+
+              selectedOrder = null;
+              NavigatorService.pushNamedAndRemoveUntil(AppRoutes.homeScreen);
+            },
+            icon: Icon(
+              Icons.arrow_back_ios,
+            ),
+          ),
+          title: Text('Order Detail',
+              style: theme.textTheme.headlineLarge!.copyWith(
+                color: Colors.black,
+                fontSize: 20.v,
+                fontWeight: FontWeight.w700,
+              )),
+          centerTitle: true,
+          iconTheme: IconThemeData(
+            color: Colors.black, // Change color here
+            size: 20.h, // Change size here
+          ),
+        ),
         floatingActionButton: (state.isShowCompletedButton)
             ? CustomElevatedButton(
                 onPressed: () {
@@ -180,6 +220,7 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
                     height: double.infinity,
                     child: GoogleMap(
                       myLocationEnabled: true,
+                      myLocationButtonEnabled: false,
                       initialCameraPosition: CameraPosition(
                         target: _currentPosition!,
                         zoom: currentZoom,
@@ -193,7 +234,7 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
                   DraggableScrollableSheet(
                     minChildSize: 0.2,
                     // Minimum height of the draggable sheet
-                    maxChildSize: 0.5,
+                    maxChildSize: 0.6,
                     // Maximum height of the draggable sheet
                     initialChildSize: 0.2,
                     // Initial height of the draggable sheet
@@ -202,147 +243,148 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
 
                     builder: (BuildContext context,
                         ScrollController scrollController) {
-                      return Container(
-                        margin: EdgeInsets.only(left: 10.h, right: 10.h),
-                        decoration: BoxDecoration(
-                          color: appTheme.bgEDF5F8,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20.v),
-                            topRight: Radius.circular(20.v),
-                          ),
-                        ),
-                        child: SingleChildScrollView(
-                          controller: scrollController,
-                          scrollDirection: Axis.vertical,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Column(
+                      return SingleChildScrollView(
+
+                        controller: scrollController,
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: Container(
+                                margin: EdgeInsets.only(left: 10.h, bottom: 5.v),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5.fSize),
+                                  color: Colors.grey.withOpacity(0.4),
+                                ),
+                                child: IconButton(
+                                  onPressed: _currentLocation,
+                                  icon: Icon(Icons.location_on),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: double.infinity,
+                              margin: EdgeInsets.only(left: 10.h, right: 10.h),
+                              decoration: BoxDecoration(
+                                color: appTheme.bgEDF5F8,
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(20.v),
+                                  topRight: Radius.circular(20.v),
+                                ),
+                              ),
+                              child: Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
-                                    margin:
-                                        EdgeInsets.only(top: 20.v, left: 20.h),
-                                    child: Text(
-                                      "Order Details",
-                                      style: TextStyle(
-                                        fontSize: 20.fSize,
-                                        fontWeight: FontWeight.bold,
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        margin:
+                                            EdgeInsets.only(top: 20.v, left: 20.h),
+                                        child: Text(
+                                          "Order Details",
+                                          style: TextStyle(
+                                            fontSize: 20.fSize,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin:
-                                        EdgeInsets.only(top: 20.v, left: 20.h),
-                                    child: Text(
-                                      "Order ID: ${selectedOrder?.orderId ?? ''}",
-                                      style: TextStyle(
-                                        fontSize: 16.fSize,
+                                      Container(
+                                        margin:
+                                            EdgeInsets.only(top: 20.v, left: 20.h),
+                                        child: Text(
+                                          "Order ID: ${selectedOrder?.orderId ?? ''}",
+                                          style: TextStyle(
+                                            fontSize: 16.fSize,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin:
-                                        EdgeInsets.only(top: 20.v, left: 20.h),
-                                    child: Text(
-                                      "Order Date: ${selectedOrder?.orderDate.toString().split(" ")[0] ?? ''}",
-                                      style: TextStyle(
-                                        fontSize: 16.fSize,
+                                      Container(
+                                        margin:
+                                            EdgeInsets.only(top: 20.v, left: 20.h),
+                                        child: Text(
+                                          "Order Date: ${selectedOrder?.orderDate.toString().split(" ")[0] ?? ''}",
+                                          style: TextStyle(
+                                            fontSize: 16.fSize,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin:
-                                        EdgeInsets.only(top: 20.v, left: 20.h),
-                                    child: Text(
-                                      "Receiver: ${selectedOrder?.receiverName ?? ''}",
-                                      style: TextStyle(
-                                        fontSize: 16.fSize,
+                                      Container(
+                                        margin:
+                                            EdgeInsets.only(top: 20.v, left: 20.h),
+                                        child: Text(
+                                          "Receiver: ${selectedOrder?.receiverName ?? ''}",
+                                          style: TextStyle(
+                                            fontSize: 16.fSize,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin:
-                                        EdgeInsets.only(top: 20.v, left: 20.h),
-                                    child: Text(
-                                      "Order Address: ${selectedOrder?.addressOrder ?? ''}",
-                                      style: TextStyle(
-                                        fontSize: 16.fSize,
+                                      Container(
+                                        margin:
+                                            EdgeInsets.only(top: 20.v, left: 20.h),
+                                        child: Text(
+                                          "Order Address: ${selectedOrder?.addressOrder ?? ''}",
+                                          style: TextStyle(
+                                            fontSize: 16.fSize,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin:
-                                        EdgeInsets.only(top: 20.v, left: 20.h),
-                                    child: Text(
-                                      "Payment: ${selectedOrder?.payment ?? ''}",
-                                      style: TextStyle(
-                                        fontSize: 16.fSize,
+                                      Container(
+                                        margin:
+                                            EdgeInsets.only(top: 20.v, left: 20.h),
+                                        child: Text(
+                                          "Payment: ${selectedOrder?.payment ?? ''}",
+                                          style: TextStyle(
+                                            fontSize: 16.fSize,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin:
-                                        EdgeInsets.only(top: 20.v, left: 20.h),
-                                    child: Text(
-                                      "Order Status: ${selectedOrder!.modStyle}",
-                                      style: TextStyle(
-                                        fontSize: 16.fSize,
+                                      Container(
+                                        margin:
+                                            EdgeInsets.only(top: 20.v, left: 20.h),
+                                        child: Text(
+                                          "Order Status: ${selectedOrder!.modStyle}",
+                                          style: TextStyle(
+                                            fontSize: 16.fSize,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin:
-                                        EdgeInsets.only(top: 20.v, left: 20.h),
-                                    child: Text(
-                                      "Total cost: ${selectedOrder?.totalCost ?? ''}",
-                                      style: TextStyle(
-                                        fontSize: 16.fSize,
+                                      Container(
+                                        margin:
+                                            EdgeInsets.only(top: 20.v, left: 20.h),
+                                        child: Text(
+                                          "Total cost: ${selectedOrder?.totalCost ?? ''}",
+                                          style: TextStyle(
+                                            fontSize: 16.fSize,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin:
-                                        EdgeInsets.only(top: 20.v, left: 20.h),
-                                    child: Text(
-                                      "Invoice status: ${selectedOrder?.invoiceStatus ?? ''}",
-                                      style: TextStyle(
-                                        fontSize: 16.fSize,
+                                      Container(
+                                        margin:
+                                            EdgeInsets.only(top: 20.v, left: 20.h),
+                                        child: Text(
+                                          "Invoice status: ${selectedOrder?.invoiceStatus ?? ''}",
+                                          style: TextStyle(
+                                            fontSize: 16.fSize,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 100.v,
-                                  ),
+                                      SizedBox(
+                                        height: 100.v,
+                                      ),
+                                    ],
+                                  )
                                 ],
-                              )
-                            ],
-                          ),
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     },
                   ),
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Container(
-                        margin: EdgeInsets.only(top: 30.v, left: 10.h),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.grey.withOpacity(0.3),
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            selectedOrder = null;
-                            NavigatorService.pushNamedAndRemoveUntil(AppRoutes.homeScreen);
-                          },
-                          icon: Icon(
-                            Icons.arrow_back,
-                            color: Colors.black,
-                          ),
-                        )),
-                  )
                 ],
               ),
       );
