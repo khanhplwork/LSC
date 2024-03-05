@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:lsc/core/app_export.dart';
@@ -13,6 +15,7 @@ class ShipmentBloc extends Bloc<ShipmentEvent, ShipmentState> {
   ShipmentBloc(ShipmentState initialState) : super(initialState) {
     on<InitShipmentEvent>(_onInitShipment);
     on<SearchShipmentEvent>(_onSearchShipment);
+    on<UpdateStatusToDeliveringEvent>(_onUpdateStatusToDelivering);
   }
 
   _onSearchShipment(
@@ -38,6 +41,24 @@ class ShipmentBloc extends Bloc<ShipmentEvent, ShipmentState> {
     } else {
       emit(state.copyWith(
           shipment: null, searchController: TextEditingController()));
+    }
+  }
+
+  FutureOr<void> _onUpdateStatusToDelivering(
+      UpdateStatusToDeliveringEvent event, Emitter<ShipmentState> emit) async {
+    showLoadingDialog();
+    var value = await updateOrderStatusToDelivering(event.shipmentId);
+    Navigator.pop(NavigatorService.navigatorKey.currentContext!);
+    if (value) {
+      var shipmentData = state.shipment?.data
+          .where((element) => element.orderId == event.shipmentId)
+          .firstOrNull;
+      if (shipmentData != null) {
+        shipmentData.statusCourier = 3;
+        emit(state.copyWith(shipment: state.shipment));
+      }
+    } else {
+      emit(state.copyWith(shipment: state.shipment));
     }
   }
 }

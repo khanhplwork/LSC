@@ -11,25 +11,33 @@ void showFailDialog(String msg) async {
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
+              SizedBox(
+                height: 10.h,
+              ),
               Row(
                 children: [
-                  Text(
-                    msg,
-                    style: theme.textTheme.bodyMedium,
+                  Flexible(
+                    child: Text(
+                      msg,
+                      style: theme.textTheme.bodyMedium,
+                    ),
                   ),
                   SizedBox(
-                    width: 10.h,
+                    width: 5.h,
                   ),
-                  Icon(
-                    Icons.warning_outlined,
-                    size: 20.fSize,
-                    color: Colors.red,
-                  )
                 ],
+              ),
+              SizedBox(
+                height: 5.h,
               ),
               Text(
                 "Please try again!",
                 style: theme.textTheme.bodyMedium,
+              ),
+              Icon(
+                Icons.warning_outlined,
+                size: 20.fSize,
+                color: Colors.red,
               ),
             ],
           ),

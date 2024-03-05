@@ -11,13 +11,27 @@ void showSuccessDialog(String msg) async {
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
+              SizedBox(
+                height: 10.h,
+              ),
               Row(
                 children: [
-                  Text(msg, style: theme.textTheme.bodyMedium,),
-                  SizedBox(width: 10.h,),
-                  Icon(Icons.check, size: 20.fSize, color: Colors.green,)
+                  Flexible(
+                    child: Text(
+                      msg,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 5.h,
+                  ),
                 ],
               ),
+              Icon(
+                Icons.check,
+                size: 25.fSize,
+                color: Colors.green,
+              )
             ],
           ),
         ),
@@ -26,8 +40,7 @@ void showSuccessDialog(String msg) async {
             child: Text(
               'Confirm',
               style: theme.textTheme.bodyMedium!.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: appTheme.indigoA700),
+                  fontWeight: FontWeight.bold, color: appTheme.indigoA700),
             ),
             onPressed: () {
               Navigator.pop(context);

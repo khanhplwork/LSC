@@ -2,7 +2,7 @@
 
 part of 'shipment_bloc.dart';
 
-class ShipmentState extends Equatable {
+class ShipmentState {
   ShipmentState({
     this.shipment,
     this.searchController,
@@ -10,9 +10,6 @@ class ShipmentState extends Equatable {
 
   Shipment? shipment;
   TextEditingController? searchController;
-
-  @override
-  List<Object?> get props => [shipment, searchController];
 
   ShipmentState copyWith({
     Shipment? shipment,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lsc/presentation/control_panel_screen/control_panel_screen.dart';
+import 'package:lsc/presentation/forgot_password_screen/forgot_password_screen.dart';
 import 'package:lsc/presentation/home_screen/home_screen.dart';
 import 'package:lsc/presentation/login_screen/login_screen.dart';
 import 'package:lsc/presentation/notification_screen/notification.dart';
@@ -30,6 +31,8 @@ class AppRoutes {
 
   static const String initialRoute = '/initialRoute';
 
+  static const String forgotPasswordScreen = '/forgot_password_screen';
+
   static Map<String, WidgetBuilder> get routes => {
         shipmentScreen: ShipmentScreen.builder,
         profileScreen: ProfileScreen.builder,
@@ -39,6 +42,7 @@ class AppRoutes {
         homeScreen: HomeScreen.builder,
         loginScreen: LoginScreen.builder,
         splashScreen: SplashScreen.builder,
-        initialRoute: SplashScreen.builder
+        initialRoute: SplashScreen.builder,
+        forgotPasswordScreen: ForgotPasswordScreen.builder,
       };
 }

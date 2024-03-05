@@ -40,6 +40,7 @@ class MyApp extends StatelessWidget {
             builder: (context, state) {
               return MaterialApp(
                 theme: theme,
+              
                 title: 'lsc',
                 navigatorKey: NavigatorService.navigatorKey,
                 debugShowCheckedModeBanner: false,

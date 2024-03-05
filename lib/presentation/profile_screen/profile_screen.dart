@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:lsc/core/api/api.dart';
 import 'package:lsc/core/app_export.dart';
 import 'package:lsc/presentation/profile_screen/bloc/profile_bloc.dart';
+import 'package:lsc/widgets/custom_elevated_button.dart';
 import 'package:lsc/widgets/custom_text_form_filed2.dart';
 
 enum UserStatus { active, inactive }
@@ -33,6 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileBloc, ProfileState>(builder: (context, state) {
+      print("return ");
       return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -45,12 +51,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Icons.arrow_back_ios,
             ),
           ),
-          title: Text('Profile',
-              style: theme.textTheme.headlineLarge!.copyWith(
-                color: Colors.black,
-                fontSize: 20.v,
-                fontWeight: FontWeight.w700,
-              )),
+          title: Text(
+            'Profile',
+            style: theme.textTheme.headlineLarge!.copyWith(
+              color: Colors.black,
+              fontSize: 20.v,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
           centerTitle: true,
           iconTheme: IconThemeData(
             color: Colors.black, // Change color here
@@ -68,16 +76,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Align(
                   alignment: Alignment.center,
-                  child: Container(
-                    width: 100.v,
-                    height: 100.v,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        image: NetworkImage(
-                          "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=338&ext=jpg&ga=GA1.1.1448711260.1706659200&semt=ais",
+                  child: GestureDetector(
+                    onTap: () async {
+                      context
+                          .read<ProfileBloc>()
+                          .add(UploadAvatarEvent(context));
+                    },
+                    child: Container(
+                      width: 100.v,
+                      height: 100.v,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: appTheme.gray200,
                         ),
-                        fit: BoxFit.fill,
+                        image: state.userAvatar == null
+                            ? null
+                            : DecorationImage(
+                                image: NetworkImage(
+                                  "https://lscfreights.online/assets/" +
+                                      state.userAvatar!,
+                                ),
+                                fit: BoxFit.fill,
+                              ),
                       ),
                     ),
                   ),
@@ -441,69 +462,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     );
                   },
                 ),
-                //UserAvatar
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: 20.v,
-                    left: 10.v,
-                    bottom: 10.v,
-                  ),
-                  child: Text(
-                    "User Avatar",
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                ),
-                Container(
-                  width: double.infinity,
-                  margin: EdgeInsets.symmetric(horizontal: 10.h),
-                  padding: EdgeInsets.all(5.h),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5.v),
-                    border: Border.all(
-                      color: appTheme.gray200,
-                    ),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.v),
-                              side: BorderSide(color: Colors.black)),
-                          backgroundColor: Colors.grey.shade200,
-                          textStyle: TextStyle(
-                            fontSize: 16.fSize,
-                          ),
-                          elevation: 2,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 10.h, vertical: 0.v),
-                        ),
-                        child: Text(
-                          "Choose File",
-                          style: theme.textTheme.bodySmall!.copyWith(
-                            color: Colors.black,
-                          ),
-                        ),
-                        onPressed: () {},
-                      ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10.h),
-                            child: Text(
-                              state.userAvatar ?? "No file chosen",
-                              style: theme.textTheme.bodySmall!.copyWith(
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
 
                 //UserStatus
                 Padding(
@@ -663,6 +621,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     );
                   },
+                ),
+                SizedBox(
+                  height: 16.v,
+                ),
+
+                Center(
+                  child: CustomElevatedButton(
+                    buttonStyle: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.h), // <-- Radius
+                      ),
+                      backgroundColor: appTheme.indigoA700,
+                      textStyle: TextStyle(
+                        fontSize: 16.fSize,
+                      ),
+                      padding: EdgeInsets.all(10.fSize),
+                      elevation: 5,
+                      shadowColor: Colors.grey,
+                    ),
+                    onPressed: () {
+                      context.read<ProfileBloc>().add(
+                            UpdateProfileEvent(context),
+                          );
+                    },
+                    text: "Update profile",
+                  ),
                 ),
 
                 SizedBox(

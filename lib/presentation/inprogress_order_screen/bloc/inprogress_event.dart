@@ -13,10 +13,14 @@ class InprogressStopLiveLocationEvent extends InprogressEvent {
   @override
   List<Object> get props => [];
 }
+
 class OnClickCompletedOrderEvent extends InprogressEvent {
+  final List<XFile> images;
+  OnClickCompletedOrderEvent({required this.images});
   @override
   List<Object> get props => [];
 }
+
 class InprogressChooseOrderEvent extends InprogressEvent {
   final PendingOrder selectedOrder;
 
@@ -27,6 +31,11 @@ class InprogressChooseOrderEvent extends InprogressEvent {
 }
 
 class InprogressBackToListEvent extends InprogressEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class InprogressAddReceiptLocation extends InprogressEvent {
   @override
   List<Object> get props => [];
 }

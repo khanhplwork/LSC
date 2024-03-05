@@ -4,12 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lsc/core/app_export.dart';
-import 'package:lsc/core/model/pending_order_model/pending_order.dart';
+import 'package:lsc/core/utils/string_extension.dart';
 import 'package:lsc/presentation/inprogress_order_screen/bloc/inprogress_bloc.dart';
-import 'package:lsc/presentation/inprogress_order_screen/widgets/pending_order_item.dart';
+import 'package:lsc/presentation/inprogress_order_screen/widgets/show_complete_dialog.dart';
 import 'package:lsc/widgets/custom_elevated_button.dart';
-import 'package:lsc/widgets/dialog/fail_dialog.dart';
-import 'package:lsc/widgets/dialog/success_dialog.dart';
 
 class InProgressOrderScreen extends StatefulWidget {
   static Widget builder(BuildContext context) {
@@ -28,7 +26,7 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
   LatLng? _currentPosition;
   double currentZoom = 12;
 
-  GoogleMapController? mapController;
+  late final _inprogressBloc = context.read<InprogressBloc>();
 
   StreamSubscription<Position>? locationStream;
 
@@ -52,12 +50,12 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
         return;
       }
       if (position != null) {
-        if (mapController != null) {
+        if (_inprogressBloc.mapController != null) {
           _currentPosition = LatLng(position.latitude, position.longitude);
-          mapController!.getZoomLevel().then((value) {
+          _inprogressBloc.mapController!.getZoomLevel().then((value) {
             currentZoom = value;
             print(currentZoom);
-            mapController!.animateCamera(
+            _inprogressBloc.mapController!.animateCamera(
               CameraUpdate.newCameraPosition(
                 CameraPosition(
                   target: _currentPosition!,
@@ -100,32 +98,32 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
   }
 
   void _currentLocation() async {
-    if(mapController == null || _currentPosition == null){
-
-    }else{
-      mapController?.animateCamera(CameraUpdate.newCameraPosition(
+    if (_inprogressBloc.mapController == null || _currentPosition == null) {
+    } else {
+      _inprogressBloc.mapController
+          ?.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
           bearing: 0,
-          target: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+          target:
+              LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
           zoom: 17.0,
         ),
       ));
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<InprogressBloc, InprogressState>(
         builder: (context, state) {
-          final _inprogressBloc = context.read<InprogressBloc>();
+      print("state.markers");
+      print(state.markers);
       return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
           toolbarHeight: 50.v,
           leading: IconButton(
             onPressed: () {
-
               selectedOrder = null;
               NavigatorService.pushNamedAndRemoveUntil(AppRoutes.homeScreen);
             },
@@ -147,48 +145,8 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
         ),
         floatingActionButton: (state.isShowCompletedButton)
             ? CustomElevatedButton(
-                onPressed: () {
-                  showDialog<void>(
-                    context: context,
-                    barrierDismissible: true, // user must tap button!
-                    builder: (context) {
-                      return AlertDialog(
-                        content: SingleChildScrollView(
-                          child: ListBody(
-                            children: <Widget>[
-                              Text("Are you sure to complete this order?"),
-                            ],
-                          ),
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            child: Text(
-                              'Cancel',
-                              style: theme.textTheme.bodyMedium!.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                          TextButton(
-                            child: Text(
-                              'Confirm',
-                              style: theme.textTheme.bodyMedium!.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: appTheme.indigoA700),
-                            ),
-                            onPressed: () {
-                              _inprogressBloc.add(
-                                OnClickCompletedOrderEvent(),
-                              );
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
+                onPressed: () async {
+                  await showCompleteOrderDialog(context, _inprogressBloc);
                 },
                 text: "Completed Order",
                 buttonStyle: ElevatedButton.styleFrom(
@@ -226,25 +184,27 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
                         zoom: currentZoom,
                       ),
                       mapType: MapType.normal,
+                      markers: (state.markers ?? []).toSet(),
                       onMapCreated: (GoogleMapController controller) {
-                        mapController = controller;
+                        _inprogressBloc.mapController = controller;
+                        _inprogressBloc.add(InprogressAddReceiptLocation());
                       },
                     ),
                   ),
                   DraggableScrollableSheet(
-                    minChildSize: 0.2,
+                    minChildSize: 0.4,
                     // Minimum height of the draggable sheet
-                    maxChildSize: 0.6,
+                    maxChildSize: 1,
                     // Maximum height of the draggable sheet
-                    initialChildSize: 0.2,
+                    initialChildSize: 0.4,
                     // Initial height of the draggable sheet
                     expand: true,
                     // Whether the sheet should expand when dragged to its maximum height
+                    snap: true,
 
                     builder: (BuildContext context,
                         ScrollController scrollController) {
                       return SingleChildScrollView(
-
                         controller: scrollController,
                         scrollDirection: Axis.vertical,
                         child: Column(
@@ -252,7 +212,8 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
                             Align(
                               alignment: Alignment.topRight,
                               child: Container(
-                                margin: EdgeInsets.only(left: 10.h, bottom: 5.v),
+                                margin:
+                                    EdgeInsets.only(left: 10.h, bottom: 5.v),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(5.fSize),
                                   color: Colors.grey.withOpacity(0.4),
@@ -265,6 +226,7 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
                             ),
                             Container(
                               width: double.infinity,
+                              height: MediaQuery.of(context).size.height * 0.85,
                               margin: EdgeInsets.only(left: 10.h, right: 10.h),
                               decoration: BoxDecoration(
                                 color: appTheme.bgEDF5F8,
@@ -279,11 +241,12 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
                                 children: [
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Container(
-                                        margin:
-                                            EdgeInsets.only(top: 20.v, left: 20.h),
+                                        margin: EdgeInsets.only(
+                                            top: 20.v, left: 20.h),
                                         child: Text(
                                           "Order Details",
                                           style: TextStyle(
@@ -293,18 +256,18 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
                                         ),
                                       ),
                                       Container(
-                                        margin:
-                                            EdgeInsets.only(top: 20.v, left: 20.h),
+                                        margin: EdgeInsets.only(
+                                            top: 20.v, left: 20.h),
                                         child: Text(
-                                          "Order ID: ${selectedOrder?.orderId ?? ''}",
+                                          "Tracking: ${selectedOrder?.orderPrefix ?? ''}${selectedOrder?.orderNo ?? ""}",
                                           style: TextStyle(
                                             fontSize: 16.fSize,
                                           ),
                                         ),
                                       ),
                                       Container(
-                                        margin:
-                                            EdgeInsets.only(top: 20.v, left: 20.h),
+                                        margin: EdgeInsets.only(
+                                            top: 20.v, left: 20.h),
                                         child: Text(
                                           "Order Date: ${selectedOrder?.orderDate.toString().split(" ")[0] ?? ''}",
                                           style: TextStyle(
@@ -313,8 +276,8 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
                                         ),
                                       ),
                                       Container(
-                                        margin:
-                                            EdgeInsets.only(top: 20.v, left: 20.h),
+                                        margin: EdgeInsets.only(
+                                            top: 20.v, left: 20.h),
                                         child: Text(
                                           "Receiver: ${selectedOrder?.receiverName ?? ''}",
                                           style: TextStyle(
@@ -323,8 +286,8 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
                                         ),
                                       ),
                                       Container(
-                                        margin:
-                                            EdgeInsets.only(top: 20.v, left: 20.h),
+                                        margin: EdgeInsets.only(
+                                            top: 20.v, left: 20.h),
                                         child: Text(
                                           "Order Address: ${selectedOrder?.addressOrder ?? ''}",
                                           style: TextStyle(
@@ -333,8 +296,8 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
                                         ),
                                       ),
                                       Container(
-                                        margin:
-                                            EdgeInsets.only(top: 20.v, left: 20.h),
+                                        margin: EdgeInsets.only(
+                                            top: 20.v, left: 20.h),
                                         child: Text(
                                           "Payment: ${selectedOrder?.payment ?? ''}",
                                           style: TextStyle(
@@ -342,19 +305,89 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
                                           ),
                                         ),
                                       ),
-                                      Container(
-                                        margin:
-                                            EdgeInsets.only(top: 20.v, left: 20.h),
-                                        child: Text(
-                                          "Order Status: ${selectedOrder!.modStyle}",
-                                          style: TextStyle(
-                                            fontSize: 16.fSize,
+                                      Row(
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.only(
+                                                top: 20.v, left: 20.h),
+                                            child: Text(
+                                              "Order Status: ",
+                                              style: TextStyle(
+                                                fontSize: 16.fSize,
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                          if (selectedOrder?.isConsolidate == 1)
+                                            Container(
+                                              padding: EdgeInsets.all(5.h),
+                                              margin: EdgeInsets.only(
+                                                  top: 20.v, left: 10.h),
+                                              decoration: BoxDecoration(
+                                                color: selectedOrder
+                                                    ?.statusStyleConsolidate
+                                                    .color
+                                                    .toColor(),
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        5.fSize),
+                                              ),
+                                              child: Text(
+                                                selectedOrder!
+                                                    .statusStyleConsolidate
+                                                    .modStyle,
+                                                style: TextStyle(
+                                                  fontSize: 12.fSize,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          if (selectedOrder?.isPickup == 1)
+                                            Container(
+                                              padding: EdgeInsets.all(5.h),
+                                              margin: EdgeInsets.only(
+                                                  top: 20.v, left: 10.h),
+                                              decoration: BoxDecoration(
+                                                color: selectedOrder
+                                                    ?.statusStylePickup.color
+                                                    .toColor(),
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        5.fSize),
+                                              ),
+                                              child: Text(
+                                                selectedOrder!
+                                                    .statusStylePickup.modStyle,
+                                                style: TextStyle(
+                                                  fontSize: 12.fSize,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          Container(
+                                            padding: EdgeInsets.all(5.h),
+                                            margin: EdgeInsets.only(
+                                                top: 20.v, left: 10.h),
+                                            decoration: BoxDecoration(
+                                              color: selectedOrder?.color
+                                                  .toColor(),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                5.fSize,
+                                              ),
+                                            ),
+                                            child: Text(
+                                              selectedOrder?.modStyle ?? '',
+                                              style: TextStyle(
+                                                fontSize: 12.fSize,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       Container(
-                                        margin:
-                                            EdgeInsets.only(top: 20.v, left: 20.h),
+                                        margin: EdgeInsets.only(
+                                            top: 20.v, left: 20.h),
                                         child: Text(
                                           "Total cost: ${selectedOrder?.totalCost ?? ''}",
                                           style: TextStyle(
@@ -363,17 +396,14 @@ class _InProgressOrderScreenState extends State<InProgressOrderScreen> {
                                         ),
                                       ),
                                       Container(
-                                        margin:
-                                            EdgeInsets.only(top: 20.v, left: 20.h),
+                                        margin: EdgeInsets.only(
+                                            top: 20.v, left: 20.h),
                                         child: Text(
                                           "Invoice status: ${selectedOrder?.invoiceStatus ?? ''}",
                                           style: TextStyle(
                                             fontSize: 16.fSize,
                                           ),
                                         ),
-                                      ),
-                                      SizedBox(
-                                        height: 100.v,
                                       ),
                                     ],
                                   )

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:lsc/core/app_export.dart';
+import 'package:lsc/core/utils/string_extension.dart';
 import 'package:lsc/presentation/shipment_screen/bloc/shipment_bloc.dart';
 import 'package:lsc/widgets/custom_icon_button.dart';
 import 'package:lsc/widgets/custom_text_form_filed2.dart';
@@ -126,6 +127,7 @@ class _ShipmentScreenState extends State<ShipmentScreen> {
                               DataColumn(label: Text('Status')),
                               DataColumn(label: Text('Total cost')),
                               DataColumn(label: Text('Invoice Status')),
+                              DataColumn(label: Text('Action')),
                             ],
                             rows: [
                               for (var shipment in state.shipment!.data)
@@ -145,9 +147,103 @@ class _ShipmentScreenState extends State<ShipmentScreen> {
                                     DataCell(Text(shipment.receiverName ?? "")),
                                     DataCell(Text(shipment.addressOrder)),
                                     DataCell(Text(shipment.payment)),
-                                    DataCell(Text("status")),
+                                    DataCell(
+                                      Row(
+                                        children: [
+                                          if (shipment.isConsolidate == 1)
+                                            Container(
+                                              padding: EdgeInsets.all(5.h),
+                                              decoration: BoxDecoration(
+                                                color: shipment
+                                                    .statusStyleConsolidate
+                                                    .color
+                                                    .toColor(),
+                                                borderRadius:
+                                                    BorderRadius.circular(5.0),
+                                              ),
+                                              child: Text(
+                                                shipment.statusStyleConsolidate
+                                                    .modStyle,
+                                                textAlign: TextAlign.right,
+                                                style: theme
+                                                    .textTheme.displaySmall!
+                                                    .copyWith(
+                                                  color: Colors.white,
+                                                  fontSize: 12.v,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                              ),
+                                            ),
+                                          if (shipment.isPickup == 1)
+                                            Container(
+                                              padding: EdgeInsets.all(5.h),
+                                              margin:
+                                                  EdgeInsets.only(right: 5.h),
+                                              decoration: BoxDecoration(
+                                                color: shipment
+                                                    .statusStylePickup.color
+                                                    .toColor(),
+                                                borderRadius:
+                                                    BorderRadius.circular(5.0),
+                                              ),
+                                              child: Text(
+                                                shipment
+                                                    .statusStylePickup.modStyle,
+                                                textAlign: TextAlign.right,
+                                                style: theme
+                                                    .textTheme.displaySmall!
+                                                    .copyWith(
+                                                  color: Colors.white,
+                                                  fontSize: 12.v,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                              ),
+                                            ),
+                                          Container(
+                                            padding: EdgeInsets.all(5.h),
+                                            decoration: BoxDecoration(
+                                              color: shipment.color.toColor(),
+                                              borderRadius:
+                                                  BorderRadius.circular(5.0),
+                                            ),
+                                            child: Text(
+                                              shipment.modStyle,
+                                              textAlign: TextAlign.right,
+                                              style: theme
+                                                  .textTheme.displaySmall!
+                                                  .copyWith(
+                                                color: Colors.white,
+                                                fontSize: 12.v,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                     DataCell(Text(shipment.totalCost)),
                                     DataCell(Text(shipment.invoiceStatus)),
+                                    DataCell(Row(
+                                      children: [
+                                        if (shipment.statusCourier != 3 &&
+                                            shipment.statusCourier != 15)
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              foregroundColor: Colors.white,
+                                              backgroundColor:
+                                                  Colors.greenAccent,
+                                            ),
+                                            onPressed: () {
+                                              context.read<ShipmentBloc>().add(
+                                                    UpdateStatusToDeliveringEvent(
+                                                      shipment.orderId,
+                                                    ),
+                                                  );
+                                            },
+                                            child: Text("Delivering"),
+                                          )
+                                      ],
+                                    )),
                                   ],
                                 ),
                             ],

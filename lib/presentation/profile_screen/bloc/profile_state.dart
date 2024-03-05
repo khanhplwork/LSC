@@ -17,6 +17,7 @@ class ProfileState extends Equatable {
     this.isActive = false,
     this.isNewsletterSubscriber = false,
     this.noteController,
+    this.userInfo,
   });
   TextEditingController? usernameController;
   TextEditingController? passwordController;
@@ -31,6 +32,7 @@ class ProfileState extends Equatable {
   bool isActive;
   bool isNewsletterSubscriber;
   TextEditingController? noteController;
+  UserInfo? userInfo;
   @override
   List<Object?> get props => [
         usernameController,
@@ -55,6 +57,7 @@ class ProfileState extends Equatable {
     TextEditingController? phoneController,
     TextEditingController? vehicleLicensePlateController,
     TextEditingController? vehicleCodeController,
+    UserInfo? userInfo,
     String? gender,
     String? userAvatar,
     bool? isActive,
@@ -78,6 +81,7 @@ class ProfileState extends Equatable {
       isNewsletterSubscriber:
           isNewsletterSubscriber ?? this.isNewsletterSubscriber,
       noteController: noteController ?? this.noteController,
+      userInfo: userInfo ?? this.userInfo,
     );
   }
 }

@@ -31,6 +31,7 @@ class NotificationScreen extends StatelessWidget {
       ),
       body: Material(
         child: Container(
+          padding: EdgeInsets.all(10.h),
           color: appTheme.bgEDF5F8,
           width: double.infinity,
           height: double.infinity,

@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:lsc/core/model/control_panel_model/control_panel.dart';
 import 'package:lsc/core/model/pending_order_model/pending_order.dart';
 import 'package:lsc/core/model/shipment_model/shipment.dart';
@@ -44,6 +46,41 @@ Future<bool> login(String username, String password) async {
     print('API login call failed with status code: ${response.statusCode}');
     // print(response.body);
     return false;
+  }
+}
+
+Future<Map<String, dynamic>> forgotPasswordSendEmail(String email) async {
+  var url = Uri.parse("https://lscfreights.online/api_forgot_password.php");
+  final response = await http.post(
+    url,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Accept': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(
+      <String, dynamic>{"email": email},
+    ),
+  );
+
+  final jsonBody = jsonDecode(response.body);
+
+  if (response.statusCode == 200) {
+    // API call success
+    print('API forgotPasswordSendEmail call success');
+    return {
+      "status": true,
+      "message": jsonBody["message"],
+    };
+    // print(response.body);
+  } else {
+    // API call failed
+    print(
+        'API forgotPasswordSendEmail call failed with status code: ${response.statusCode}');
+    // print(response.body);
+    return {
+      "status": false,
+      "message": jsonBody["email"],
+    };
   }
 }
 
@@ -124,12 +161,13 @@ Future<Shipment?> getAllShipment() async {
     return null;
   }
 }
-Future<Shipment?> searchShipmentByTrackingID(String trackingID) async {
 
+Future<Shipment?> searchShipmentByTrackingID(String trackingID) async {
   var url;
-  if(trackingID.isNotEmpty){
-    url = Uri.parse("https://lscfreights.online/api_shipments.php?search=$trackingID");
-  }else{
+  if (trackingID.isNotEmpty) {
+    url = Uri.parse(
+        "https://lscfreights.online/api_shipments.php?search=$trackingID");
+  } else {
     url = Uri.parse("https://lscfreights.online/api_shipments.php");
   }
   final response = await http.get(
@@ -155,6 +193,7 @@ Future<Shipment?> searchShipmentByTrackingID(String trackingID) async {
     return null;
   }
 }
+
 Future<Shipment?> getRecentShipment() async {
   var url = Uri.parse("https://lscfreights.online/api_shipment_delivering.php");
   final response = await http.get(
@@ -207,21 +246,22 @@ Future<List<PendingOrder>?> getPendingOrders() async {
   }
 }
 
-
-Future<bool> completedOrder(String orderID) async {
+Future<bool> completedOrder(String orderID, List<XFile> images) async {
   var url = Uri.parse("https://lscfreights.online/api_order_delivered.php");
-  final response = await http.post(
-    url,
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'Accept': 'application/json; charset=UTF-8',
-      "Cookie": headers['cookie'] ?? "",
-    },
-    body: jsonEncode(
-      <String, dynamic>{"id": orderID},
-    ),
-  );
-
+  var request = http.MultipartRequest('POST', url);
+  request.headers.addAll(headers);
+  request.fields['order_id'] = orderID;
+  for (var i = 0; i < images.length; i++) {
+    var bytes = await images[i].readAsBytes();
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'filesMultiple[]',
+        bytes,
+        filename: images[i].path.split('/').last,
+      ),
+    );
+  }
+  var response = await request.send();
   if (response.statusCode == 200) {
     // API call success
     print('API completedOrder call success');
@@ -230,10 +270,84 @@ Future<bool> completedOrder(String orderID) async {
     // print(response.body);
   } else {
     // API call failed
-    print('API completedOrder call failed with status code: ${response.statusCode}');
+    print(
+        'API completedOrder call failed with status code: ${response.statusCode}');
     // print(response.body);
     return false;
   }
 }
 
+Future<Map<String, dynamic>> uploadAvatar(XFile file) async {
+  var url = Uri.parse("https://lscfreights.online/api_upload_avatar.php");
+  var request = http.MultipartRequest('POST', url);
+  var bytes = await file.readAsBytes();
+  request.files.add(
+    http.MultipartFile.fromBytes(
+      'avatar',
+      bytes,
+      filename: file.path.split('/').last,
+    ),
+  );
+  request.headers.addAll(headers);
+  var response = await request.send();
+  var responseString = await response.stream.bytesToString();
+  if (response.statusCode == 200) {
+    // API call success
+    print('API uploadAvatar call success');
 
+    return {
+      "status": true,
+      "message": jsonDecode(responseString)["url"],
+    };
+  } else {
+    // API call failed
+    print(
+        'API uploadAvatar call failed with status code: ${response.statusCode}');
+    // print(response.body);
+    return {
+      "status": false,
+      "message": jsonDecode(responseString)["message"],
+    };
+  }
+}
+
+Future<bool> updateDriverInfo(UserInfo userInfo) async {
+  var url = Uri.parse("https://lscfreights.online/api_edit_driver_info.php");
+  final response = await http.post(
+    url,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Accept': 'application/json; charset=UTF-8',
+      "Cookie": headers['cookie'] ?? "",
+    },
+    body: jsonEncode(
+      userInfo.toJson(),
+    ),
+  );
+
+  if (response.statusCode == 200) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+Future<bool> updateOrderStatusToDelivering(int id) async {
+  var url = Uri.parse("https://lscfreights.online/api_order_in_transit.php");
+
+  final response = await http.post(
+    url,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Accept': 'application/json; charset=UTF-8',
+      "Cookie": headers['cookie'] ?? "",
+    },
+    body: jsonEncode({"id": id}),
+  );
+
+  if (response.statusCode == 200) {
+    return true;
+  } else {
+    return false;
+  }
+}

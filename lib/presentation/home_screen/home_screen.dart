@@ -198,10 +198,11 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 title: Text('Shipment', style: TextStyle(color: Colors.white)),
-                onTap: () {
+                onTap: () async {
                   // Handle item 1 tap
 
-                  NavigatorService.pushNamed(AppRoutes.shipmentScreen);
+                  await NavigatorService.pushNamed(AppRoutes.shipmentScreen);
+                  context.read<HomeBloc>().add(HomeInitialEvent());
                 },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
@@ -259,7 +260,7 @@ class HomeScreen extends StatelessWidget {
                         Icon(Icons.history, color: Colors.black, size: 20.h),
                         SizedBox(width: 10.h),
                         Text(
-                          'Recent Activity',
+                          'Delivering order',
                           style: theme.textTheme.headlineSmall!.copyWith(
                             color: Colors.black,
                             fontSize: 16.v,
@@ -279,7 +280,8 @@ class HomeScreen extends StatelessWidget {
                       return InkWell(
                         onTap: () {
                           selectedOrder = state.recentShipment?.data[index];
-                          NavigatorService.pushNamed(AppRoutes.inProgressOrderScreen);
+                          NavigatorService.pushNamed(
+                              AppRoutes.inProgressOrderScreen);
                         },
                         child: recentShipmentWidget(
                             context, state.recentShipment!.data[index]),
