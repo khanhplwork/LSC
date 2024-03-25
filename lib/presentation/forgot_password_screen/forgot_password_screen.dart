@@ -65,7 +65,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             decoration: BoxDecoration(
                                 image: DecorationImage(
                               image: AssetImage(ImageConstant.imgImage1),
-                              fit: BoxFit.fill,
                             )),
                           ),
                           SizedBox(height: 71.v),

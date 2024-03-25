@@ -29,10 +29,10 @@ class SplashScreen extends StatelessWidget {
                 width: 300.h,
                 height: 160.v,
                 decoration: BoxDecoration(
-
-                    image: DecorationImage(
-                        image: AssetImage(ImageConstant.imgImage1),
-                        fit: BoxFit.fill,)),
+                  image: DecorationImage(
+                    image: AssetImage(ImageConstant.imgImage1),
+                  ),
+                ),
               ),
             ),
           ),

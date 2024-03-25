@@ -52,7 +52,6 @@ class LoginScreen extends StatelessWidget {
                               decoration: BoxDecoration(
                                   image: DecorationImage(
                                 image: AssetImage(ImageConstant.imgImage1),
-                                fit: BoxFit.fill,
                               )),
                             ),
                             SizedBox(height: 71.v),
